@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  creationTimestamp: '2017-09-28T08:47:16Z'
+  name: b2share-test-build
+  namespace: test-b2share
+  resourceVersion: '130162637'
+  selfLink: /oapi/v1/namespaces/test-b2share/buildconfigs/b2share-test-build
+  uid: a1392038-a429-11e7-870a-02163e00d164
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'b2share:latest'
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    dockerfile: |-
+      FROM eudatb2share/b2share:2.0.2rc1
+       RUN chgrp -R 0 /tmp && chmod -R g=u /tmp 
+       RUN chgrp -R 0 /eudat && chmod -R g=u /eudat
+       RUN chgrp -R 0 /usr && chmod -R g=u /usr
+    type: Dockerfile
+  strategy:
+    dockerStrategy:
+      env:
+        - name: B2SHARE_SECRET_KEY
+          value: secretkey
+        - name: B2ACCESS_CONSUMER_KEY
+          value: dinossimpson
+        - name: B2ACCESS_SECRET_KEY
+          value: bartman2464
+        - name: USE_STAGING_B2ACCESS
+          value: '1'
+        - name: INIT_DB_AND_INDEX
+          value: '1'
+        - name: LOAD_DEMO_COMMUNITIES_AND_RECORDS
+          value: '1'
+        - name: B2SHARE_PREFERRED_URL_SCHEME
+          value: http
+        - name: B2SHARE_SQLALCHEMY_DATABASE_URI
+          value: 'postgresql+psycopg2://b2share:pass123@postgresql:5432/b2sharedb'
+        - name: B2SHARE_CACHE_REDIS_HOST
+          value: redis
+        - name: B2SHARE_CACHE_REDIS_URL
+          value: 'redis://redis:6379/0'
+        - name: B2SHARE_ACCOUNTS_SESSION_REDIS_URL
+          value: 'redis://redis:6379/1'
+        - name: B2SHARE_BROKER_URL
+          value: 'amqp://guest:pass123@rabbitmq:5672'
+        - name: B2SHARE_CELERY_BROKER_URL
+          value: 'amqp://guest:pass123@rabbitmq:5672'
+        - name: B2SHARE_CELERY_RESULT_BACKEND
+          value: 'redis://redis:6379/2'
+        - name: B2SHARE_SEARCH_ELASTIC_HOST
+          value: elasticsearch-b2share
+    type: Docker
+  triggers: []
+status:
+  lastVersion: 16
